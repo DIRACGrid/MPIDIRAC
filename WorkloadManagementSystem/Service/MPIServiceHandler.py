@@ -8,25 +8,19 @@ using Matcher Service.
 
 __RCSID__ = ""
 
-import re, os, sys, time, commands
-import string
-import signal, fcntl, socket
-import getopt
+import os
+import time
+import commands
 from   types import *
 import threading
 
 from DIRAC.Core.DISET.RequestHandler                   import RequestHandler
 from DIRAC                                             import gConfig, gLogger, S_OK, S_ERROR
 from DIRAC.WorkloadManagementSystem.DB.JobDB           import JobDB
-from DIRAC.WorkloadManagementSystem.DB.JobLoggingDB    import JobLoggingDB
-from DIRAC.WorkloadManagementSystem.DB.TaskQueueDB     import TaskQueueDB
-from DIRAC.WorkloadManagementSystem.DB.MPIJobDB    import MPIJobDB
+from MPIDIRAC.WorkloadManagementSystem.DB.MPIJobDB     import MPIJobDB
 from DIRAC.Core.DISET.RPCClient                        import RPCClient
-from DIRAC                                             import gMonitor
-from DIRAC.Core.Utilities.ThreadScheduler              import gThreadScheduler
 from DIRAC.Core.Utilities.ClassAd.ClassAdLight         import ClassAd
 from DIRAC.FrameworkSystem.Client.ProxyManagerClient   import gProxyManager
-from DIRAC.Core.Security.Misc                          import getProxyInfo
 from DIRAC.Core.Security                               import File
 
 
@@ -207,10 +201,10 @@ class MPIServiceHandler(RequestHandler):
            gLogger.error(result['Message'])
          return S_ERROR(result)
        else:
-	     pilotID = result['Value']
-	     gLogger.info ("-----------------------------------------")
-	     gLogger.info (("The pilot ID assigned: %s and type: %s ") % (pilotID, pilotType))
-	     gLogger.info ("-----------------------------------------")
+         pilotID = result['Value']
+         gLogger.info ("-----------------------------------------")
+         gLogger.info (("The pilot ID assigned: %s and type: %s ") % (pilotID, pilotType))
+         gLogger.info ("-----------------------------------------")
     ### VANESSA HOY
        slock.release()
     elif status == 'Accumulating':
@@ -229,20 +223,20 @@ class MPIServiceHandler(RequestHandler):
         if not result['OK']:
         ## OJO CON LOS SLOCK RELEASE
           slock.release()
-	  gLogger.error("-------------------------------------------------------------------")
-	  gLogger.error('Failed to add slave host to the ring')
-	  gLogger.error("-------------------------------------------------------------------")
-	  rescheduleJobs = jobDB.rescheduleJob(jobID)
-	  if not result['OK']:
-	    gLogger.error("-------------------------------------------------------------------")
-	    gLogger.error('Failed to reschedule the job')
-	    gLogger.error("-------------------------------------------------------------------")
-	    gLogger.error(result['Message'])
-	    return S_ERROR(result)
-	pilotID = result['Value']
-	gLogger.info ("-----------------------------------------")
-	gLogger.info (("The pilot ID assigned: %s and type: %s ") % (pilotID, pilotType))
-	gLogger.info ("-----------------------------------------")
+          gLogger.error("-------------------------------------------------------------------")
+          gLogger.error('Failed to add slave host to the ring')
+          gLogger.error("-------------------------------------------------------------------")
+          rescheduleJobs = jobDB.rescheduleJob(jobID)
+          if not result['OK']:
+            gLogger.error("-------------------------------------------------------------------")
+            gLogger.error('Failed to reschedule the job')
+            gLogger.error("-------------------------------------------------------------------")
+            gLogger.error(result['Message'])
+            return S_ERROR(result)
+        pilotID = result['Value']
+        gLogger.info ("-----------------------------------------")
+        gLogger.info (("The pilot ID assigned: %s and type: %s ") % (pilotID, pilotType))
+        gLogger.info ("-----------------------------------------")
         jobMatch = False
       ### VANESSA HOY
       slock.release()
